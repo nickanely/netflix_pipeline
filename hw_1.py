@@ -3,6 +3,11 @@ import logging.config
 from datetime import datetime, time
 
 import pandas as pd
+import telebot
+
+chat_id = '6249231839'
+token = '6997477472:AAGaJznKxVvNpi_g5HuvqILbEf3fFQTFgBc'
+main_formatter = logging.Formatter('%(asctime)s => %(name)s => %(levelname)s => %(message)s => %(filename)s')
 
 
 # filter to receive logs during specific time. maybe no real life use, but practice
@@ -20,6 +25,26 @@ class Filter(logging.Filter):
             return False
 
 
+class TelegramBot(logging.Handler):
+    def __init__(self, token, chat_id):
+        super().__init__()
+        self.token = token
+        self.chat_id = chat_id
+
+    def emit(self, record: logging.LogRecord):
+        bot = telebot.TeleBot(self.token)
+        bot.send_message(self.chat_id, self.format(record))
+
+
+critical_logger = logging.getLogger()
+
+tg_bot_handler = TelegramBot(token, chat_id)
+tg_bot_handler.setLevel(logging.CRITICAL)
+tg_bot_handler.setFormatter(main_formatter)
+
+critical_logger.addHandler(tg_bot_handler)
+
+
 logging.config.fileConfig('config.ini')
 logger = logging.getLogger(__name__)
 logger.addFilter(Filter(time(0, 1), time(23, 59)))
@@ -30,6 +55,7 @@ try:
     df = pd.read_csv('netflix_TV_Shows_and_Movies.csv')
 except FileNotFoundError as e:
     logger.error(f'file was not found {e}')
+    critical_logger.critical('This is critical situation')
 
 movies_count = 0
 shows_count = 0
