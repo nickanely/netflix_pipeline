@@ -1,0 +1,10 @@
+2024-03-17 22:26:51,812 => __main__ => INFO => checking attribute names ... => hw_1.py
+2024-03-17 22:26:51,815 => __main__ => INFO => checking total count and calculating ratio ... => hw_1.py
+2024-03-17 22:27:01,594 => __main__ => INFO => checking attribute names ... => hw_1.py
+2024-03-17 22:27:01,596 => __main__ => INFO => checking total count and calculating ratio ... => hw_1.py
+2024-03-17 22:27:08,889 => __main__ => ERROR => file was not found [Errno 2] No such file or directory: 'netflx_TV_Shows_and_Movies.csv' => hw_1.py
+2024-03-17 22:27:08,889 => __main__ => INFO => checking attribute names ... => hw_1.py
+2024-03-17 22:27:08,889 => __main__ => ERROR => attribute`s name is wrong 'type' => hw_1.py
+2024-03-17 22:27:08,889 => __main__ => INFO => checking total count and calculating ratio ... => hw_1.py
+2024-03-17 22:27:25,960 => __main__ => INFO => checking attribute names ... => hw_1.py
+2024-03-17 22:27:25,961 => __main__ => INFO => checking total count and calculating ratio ... => hw_1.py
