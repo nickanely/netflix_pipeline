@@ -1,61 +1,39 @@
-import logging
 import logging.config
 from datetime import datetime, time
-
 import pandas as pd
-import telebot
+import requests
 
-chat_id = '6249231839'
-token = '6997477472:AAGaJznKxVvNpi_g5HuvqILbEf3fFQTFgBc'
 main_formatter = logging.Formatter('%(asctime)s => %(name)s => %(levelname)s => %(message)s => %(filename)s')
 
 
-# filter to receive logs during specific time. maybe no real life use, but practice
-class Filter(logging.Filter):
-    def __init__(self, start_time, end_time):
+class SlackHandler(logging.Handler):
+    def __init__(self, webhook_url):
         super().__init__()
-        self.start_time = start_time
-        self.end_time = end_time
+        self.webhook_url = webhook_url
 
-    def filter(self, record):
-        current_time = datetime.now().time()
-        if self.start_time <= current_time <= self.end_time:
-            return True
-        else:
-            return False
-
-
-class TelegramBot(logging.Handler):
-    def __init__(self, token, chat_id):
-        super().__init__()
-        self.token = token
-        self.chat_id = chat_id
-
-    def emit(self, record: logging.LogRecord):
-        bot = telebot.TeleBot(self.token)
-        bot.send_message(self.chat_id, self.format(record))
+    def emit(self, record):
+        log_entry = self.format(record)
+        payload = {
+            "text": log_entry
+        }
+        try:
+            response = requests.post(self.webhook_url, json=payload)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"Error sending log entry to Slack: {e}")
 
 
-critical_logger = logging.getLogger()
-
-tg_bot_handler = TelegramBot(token, chat_id)
-tg_bot_handler.setLevel(logging.CRITICAL)
-tg_bot_handler.setFormatter(main_formatter)
-
-critical_logger.addHandler(tg_bot_handler)
-
-
+# 4. Create a logging config file and figure out how to apply it: 1 point
 logging.config.fileConfig('config.ini')
-logger = logging.getLogger(__name__)
-logger.addFilter(Filter(time(0, 1), time(23, 59)))
+logger = logging.getLogger('homework')
 
+# Apply this configuration to any of your pet projects (3 points)
 df = pd.DataFrame()
-
 try:
-    df = pd.read_csv('netflix_TV_Shows_and_Movies.csv')
+    df = pd.read_csv('netfix_TV_Shows_and_Movies.csv')
 except FileNotFoundError as e:
     logger.error(f'file was not found {e}')
-    critical_logger.critical('This is critical situation')
+    logger.critical('This is critical situation')
 
 movies_count = 0
 shows_count = 0
